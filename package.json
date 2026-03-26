@@ -1,8 +1,8 @@
 {
-  "name": "@ui5/claude-plugin",
+  "name": "@ui5/plugins-claude",
   "version": "0.0.1",
   "private": "true",
-  "description": "UI5 Claude Plugin",
+  "description": "UI5 plugins for Claude",
   "author": {
     "name": "SAP SE",
     "email": "openui5@sap.com",
@@ -18,10 +18,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/UI5/claude-plugin.git"
+    "url": "git+https://github.com/UI5/plugins-claude.git"
   },
   "bugs": {
-    "url": "https://github.com/UI5/claude-plugin/issues"
+    "url": "https://github.com/UI5/plugins-claude/issues"
   },
   "scripts": {
     "check-licenses": "licensee --errors-only",
@@ -29,8 +29,9 @@
     "hooks:pre-push": "npm run lint:commit",
     "lint:commit": "commitlint -e",
     "prepare": "node ./.husky/skip.js || husky",
-    "prettier": "prettier .mcp.json .claude-plugin/plugin.json --write",
-    "prettier:check": "prettier .mcp.json .claude-plugin/plugin.json --check",
+    "prettier": "prettier **/.mcp.json **/plugin.json",
+    "prettier:write": "npm run prettier -- --write",
+    "prettier:check": "npm run prettier -- --check",
     "test": "npm run prettier:check && npm run knip && npm run check-licenses"
   },
   "devDependencies": {

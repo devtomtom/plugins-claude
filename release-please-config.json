@@ -67,7 +67,7 @@
             "extra-files": [
                 {
                     "type": "json",
-                    "path": ".claude-plugin/plugin.json",
+                    "path": "**/.claude-plugin/plugin.json",
                     "jsonpath": "$..version"
                 }
             ]
