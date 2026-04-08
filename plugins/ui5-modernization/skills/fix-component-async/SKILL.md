@@ -228,6 +228,7 @@ sap.ui.define([
 - The interface makes `async: true` flags redundant - they can be safely removed
 - Components that extend UIComponent (not just Component) can use IAsyncContentCreation
 - If the component inherits from a custom base component that already implements IAsyncContentCreation, no changes are needed
+- **`IAsyncContentCreation` vs manifest v2**: These are independent concerns. Updating manifest `_version` to `"2.0.0"` does NOT automatically enable async content creation — `IAsyncContentCreation` must still be explicitly implemented in Component.js. Conversely, adding `IAsyncContentCreation` does not require manifest v2.
 
 ## Related Skills
 

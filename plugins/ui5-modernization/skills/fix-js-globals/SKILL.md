@@ -173,16 +173,11 @@ sap.ui.define([
 
 ### 4. jQuery/$ Global Access (All Standard jQuery APIs)
 
-**Problem**: Using `jQuery` or `$` as a global — whether as a constructor (`jQuery(...)`) or calling static methods (`jQuery.each()`, `jQuery.extend()`, etc.) — without importing the jQuery module.
+**Problem**: Using `jQuery` or `$` as a global without importing the jQuery module.
 
-**IMPORTANT**: The fix is NOT to replace jQuery API calls with something else. **All standard jQuery APIs — both instance methods and static methods — are perfectly fine to use.** The only issue is that `jQuery` / `$` must be loaded through a proper module dependency instead of accessed as a global.
+**IMPORTANT**: The fix is NOT to replace jQuery API calls. **All standard jQuery APIs are fine to use** — both instance methods (`.find()`, `.addClass()`, etc.) and static methods (`jQuery.each()`, `jQuery.extend()`, `jQuery.proxy()`, etc.). The only issue is that `jQuery`/`$` must be loaded through a proper module dependency.
 
-This applies to ALL of the following (non-exhaustive list):
-- **Constructor/DOM calls**: `jQuery(...)`, `$(...)`, `jQuery("#id")`, `$(".class")`
-- **Static utility methods**: `jQuery.each()`, `jQuery.extend()`, `jQuery.proxy()`, `jQuery.isEmptyObject()`, `jQuery.isPlainObject()`, `jQuery.map()`, `jQuery.grep()`, `jQuery.merge()`, `jQuery.ajax()`, `jQuery.Deferred()`, `jQuery.when()`, `jQuery.type()`, `jQuery.trim()`
-- **Instance methods**: `.find()`, `.addClass()`, `.css()`, `.on()`, `.off()`, `.trigger()`, `.html()`, `.text()`, `.val()`, `.attr()`, `.prop()`, `.data()`, `.toggle()`, etc.
-
-**Do NOT replace any of these with non-jQuery alternatives.** Just add the import.
+**How to tell the difference**: `jQuery.sap.*` (with `.sap.`) = deprecated UI5 utility, must be replaced (see 4b below). `jQuery.*` (without `.sap.`) or `jQuery(...)` = standard jQuery, keep as-is, just add import.
 
 ```javascript
 // Before - CANNOT be auto-fixed (jQuery/$ used as global)
@@ -195,17 +190,15 @@ sap.ui.define([
             $(".container").css("display", "block");
             jQuery.each(aItems, function(i, item) { /* ... */ });
             var oMerged = jQuery.extend(true, {}, oDefaults, oSettings);
-            var fnBound = jQuery.proxy(this.onPress, this);
-            if (jQuery.isEmptyObject(oData)) { /* ... */ }
         }
     });
 });
 ```
 
-**Fix Strategy**: Add `sap/ui/thirdparty/jquery` to the `sap.ui.define` dependency array and use the dependency variable. Replace any bare `$` calls with the dependency variable name (`jQuery`). **Keep all jQuery API calls as-is.**
+**Fix Strategy**: Add `sap/ui/thirdparty/jquery` to dependencies. Replace bare `$` with `jQuery`. Keep all jQuery API calls as-is.
 
 ```javascript
-// After - jQuery loaded as a proper dependency, ALL calls kept unchanged
+// After - jQuery loaded as a proper dependency
 sap.ui.define([
     "sap/ui/core/mvc/Controller",
     "sap/ui/thirdparty/jquery"
@@ -216,20 +209,15 @@ sap.ui.define([
             jQuery(".container").css("display", "block");
             jQuery.each(aItems, function(i, item) { /* ... */ });
             var oMerged = jQuery.extend(true, {}, oDefaults, oSettings);
-            var fnBound = jQuery.proxy(this.onPress, this);
-            if (jQuery.isEmptyObject(oData)) { /* ... */ }
         }
     });
 });
 ```
 
 **Key rules:**
-- Add `"sap/ui/thirdparty/jquery"` to the nearest enclosing `sap.ui.define` or `sap.ui.require` dependency array
-- Name the dependency parameter `jQuery`
-- Replace any `$` references with the `jQuery` dependency variable (since `$` is just a global alias that won't exist once globals are removed)
-- Do NOT replace jQuery API calls with alternative code — not DOM calls, not `jQuery.each`, not `jQuery.extend`, not `jQuery.proxy`, not any other standard jQuery method. Just add the import.
-- If `sap/ui/thirdparty/jquery` is already a dependency, no further changes are needed
-- **How to tell the difference**: `jQuery.sap.*` (with `.sap.` in the path) = deprecated UI5 utility, must be replaced (see 4b below). `jQuery.*` (without `.sap.`) or `jQuery(...)` = standard jQuery API, keep as-is, just add import.
+- Add `"sap/ui/thirdparty/jquery"` to the dependency array, name the parameter `jQuery`
+- Replace `$` references with `jQuery` (since `$` is a global alias that won't exist once globals are removed)
+- Do NOT replace any standard jQuery API calls — just add the import
 
 ### 4b. jQuery.sap.* Utility Access
 
@@ -316,26 +304,7 @@ sap.ui.define([
 });
 ```
 
-**Alternative**: Use async require with callback for lazy loading.
-
-```javascript
-// After - async variant
-sap.ui.define([
-    "sap/ui/core/mvc/Controller"
-], function(Controller) {
-    return Controller.extend("my.app.App", {
-        navigate: function() {
-            sap.ui.require(["sap/ushell/Container"], function(Container) {
-                if (Container) {
-                    Container.getService("CrossApplicationNavigation");
-                }
-            }, function() {
-                // Error callback - module not available
-            });
-        }
-    });
-});
-```
+**Alternative**: For lazy loading, use async `sap.ui.require(["sap/ushell/Container"], function(Container) { ... }, function() { /* error */ })` with a callback.
 
 ### 6. Custom Namespace Definitions
 
@@ -361,57 +330,33 @@ sap.ui.define([], function() {
         helper: function() { ... }
     };
 });
-
-// Usage in other files:
-sap.ui.define([
-    "mycompany/myapp/utils"
-], function(utils) {
-    utils.helper();
-});
 ```
+
+Other files then consume it via `sap.ui.define(["mycompany/myapp/utils"], function(utils) { ... })`.
 
 ### 7. Binding Type Strings Without Import
 
 **Problem**: Using type as string in binding without importing the module.
 
 ```javascript
-// Before - triggers no-globals
-sap.ui.define([
-    "sap/ui/core/mvc/Controller",
-    "sap/m/Input"
-], function(Controller, Input) {
-    return Controller.extend("my.app.App", {
-        onInit: function() {
-            var oInput = new Input({
-                value: {
-                    path: "/amount",
-                    type: "sap.ui.model.type.Float"  // Global reference as string
-                }
-            });
-        }
-    });
+// Before - triggers no-globals (inside a controller)
+var oInput = new Input({
+    value: {
+        path: "/amount",
+        type: "sap.ui.model.type.Float"  // Global reference as string
+    }
 });
 ```
 
-**Fix Strategy**: Import the type and use the class reference.
+**Fix Strategy**: Import the type module and use the class reference.
 
 ```javascript
-// After
-sap.ui.define([
-    "sap/ui/core/mvc/Controller",
-    "sap/m/Input",
-    "sap/ui/model/type/Float"
-], function(Controller, Input, FloatType) {
-    return Controller.extend("my.app.App", {
-        onInit: function() {
-            var oInput = new Input({
-                value: {
-                    path: "/amount",
-                    type: new FloatType()
-                }
-            });
-        }
-    });
+// After - add "sap/ui/model/type/Float" to sap.ui.define dependencies
+var oInput = new Input({
+    value: {
+        path: "/amount",
+        type: new FloatType()  // FloatType from dependency
+    }
 });
 ```
 
@@ -530,100 +475,7 @@ sap.ui.define([
 
 ## Example Fix Session
 
-Given linter output:
-```
-npx @ui5/linter --details
-
-App.controller.js:10:3 error Access of global variable 'log' (jQuery.sap.log)  no-globals
-  Details: Do not use global variables to access UI5 modules or APIs.
-App.controller.js:15:3 error Access of global variable 'jQuery' (jQuery)  no-globals
-  Details: Do not use global variables to access UI5 modules or APIs.
-App.controller.js:16:3 error Access of global variable '$' ($)  no-globals
-  Details: Do not use global variables to access UI5 modules or APIs.
-App.controller.js:20:3 error Access of global variable 'each' (jQuery.each)  no-globals
-  Details: Do not use global variables to access UI5 modules or APIs.
-App.controller.js:23:3 error Access of global variable 'extend' (jQuery.extend)  no-globals
-  Details: Do not use global variables to access UI5 modules or APIs.
-App.controller.js:30:3 error Access of global variable 'Container' (sap.ushell.Container)  no-globals
-  Details: Do not use global variables to access UI5 modules or APIs.
-```
-
-**Before:**
-```javascript
-sap.ui.define([
-    "sap/ui/core/mvc/Controller"
-], function(Controller) {
-    "use strict";
-
-    return Controller.extend("my.app.App", {
-        onInit: function() {
-            jQuery.sap.log.info("App initialized");
-        },
-
-        onAfterRendering: function() {
-            jQuery("#myElement").addClass("highlight");
-            $(".container").css("display", "block");
-        },
-
-        processItems: function(aItems) {
-            jQuery.each(aItems, function(i, item) {
-                item.processed = true;
-            });
-            var oMerged = jQuery.extend(true, {}, this._defaults, aItems[0]);
-            var fnCallback = jQuery.proxy(this._handleResult, this);
-            if (jQuery.isEmptyObject(oMerged)) { return; }
-        },
-
-        navigate: function() {
-            if (sap.ushell && sap.ushell.Container) {
-                sap.ushell.Container.getService("CrossApplicationNavigation");
-            }
-        }
-    });
-});
-```
-
-**After:**
-```javascript
-sap.ui.define([
-    "sap/ui/core/mvc/Controller",
-    "sap/base/Log",
-    "sap/ui/thirdparty/jquery"
-], function(Controller, Log, jQuery) {
-    "use strict";
-
-    return Controller.extend("my.app.App", {
-        onInit: function() {
-            // jQuery.sap.log → replaced with Log module (deprecated UI5 utility)
-            Log.info("App initialized");
-        },
-
-        onAfterRendering: function() {
-            // jQuery DOM calls kept as-is, $ replaced with jQuery variable
-            jQuery("#myElement").addClass("highlight");
-            jQuery(".container").css("display", "block");
-        },
-
-        processItems: function(aItems) {
-            // jQuery.each, jQuery.extend, jQuery.proxy, jQuery.isEmptyObject
-            // are standard jQuery static methods — kept as-is, NOT replaced
-            jQuery.each(aItems, function(i, item) {
-                item.processed = true;
-            });
-            var oMerged = jQuery.extend(true, {}, this._defaults, aItems[0]);
-            var fnCallback = jQuery.proxy(this._handleResult, this);
-            if (jQuery.isEmptyObject(oMerged)) { return; }
-        },
-
-        navigate: function() {
-            var Container = sap.ui.require("sap/ushell/Container");
-            if (Container) {
-                Container.getService("CrossApplicationNavigation");
-            }
-        }
-    });
-});
-```
+For a comprehensive before/after example combining multiple case types (jQuery.sap.*, jQuery DOM, conditional globals), read `references/example-fix-session.md`.
 
 ## Notes
 

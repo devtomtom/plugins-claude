@@ -103,6 +103,9 @@ Replace with modern theme:
 - `sap_belize_hcb` → `sap_horizon_hcb`
 - `sap_belize_hcw` → `sap_horizon_hcw`
 - `sap_hcb` → `sap_horizon_hcb`
+- `sap_ux` → `sap_horizon`
+- `sap_platinum` → `sap_horizon`
+- `sap_goldreflection` → `sap_horizon`
 
 #### `no-deprecated-library` - Deprecated Libraries
 
@@ -112,6 +115,11 @@ Remove deprecated libraries from `data-sap-ui-libs`:
 - `sap.makit`
 - `sap.me`
 - `sap.ca.ui`
+- `sap.sac.grid`
+- `sap.ui.suite`
+- `sap.zen.commons`
+- `sap.zen.crosstab`
+- `sap.zen.dsh`
 
 ## Implementation Steps
 

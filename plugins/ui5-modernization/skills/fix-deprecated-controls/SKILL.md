@@ -94,7 +94,6 @@ sap.ui.define([
 |------------------|-------------|
 | `sap.ui.commons.*` | `sap.m.*` equivalents |
 | `sap.ui.ux3.*` | `sap.m.*` or `sap.f.*` |
-| `sap.m.DateTimeInput` | `sap.m.DatePicker` + `sap.m.TimePicker` |
 | `sap.ui.commons.TextField` | `sap.m.Input` |
 | `sap.ui.commons.Button` | `sap.m.Button` |
 | `sap.ui.commons.Label` | `sap.m.Label` |
@@ -103,6 +102,69 @@ sap.ui.define([
 | `sap.ui.model.odata.ODataModel` | `sap.ui.model.odata.v2.ODataModel` |
 | `sap.m.MessagePage` | `sap.m.IllustratedMessage` (see section 8) |
 | `sap.viz.ui5.controls.VizFrame` (old) | Check `sap.viz` documentation |
+
+**sap.m Deprecated Controls:**
+
+| Deprecated Class | Replacement | Notes |
+|---|---|---|
+| `sap.m.UploadCollection` | `sap.m.upload.UploadSet` or `sap.m.plugins.UploadSetwithTable` | UploadSetwithTable for table-based layouts |
+| `sap.m.TablePersoDialog` | `sap.m.p13n.*` | Use p13n personalization framework |
+| `sap.m.TablePersoController` | `sap.m.p13n.*` | Use p13n personalization framework |
+| `sap.m.TablePersoProvider` | `sap.m.p13n.*` | Use p13n personalization framework |
+| `sap.m.P13nDialog` | `sap.m.p13n.Popup` | Use p13n framework |
+| `sap.m.P13nColumnsPanel` | `sap.m.p13n.SelectionPanel` | Use p13n framework |
+| `sap.m.P13nSortPanel` | `sap.m.p13n.SortPanel` | Use p13n framework |
+| `sap.m.P13nGroupPanel` | `sap.m.p13n.GroupPanel` | Use p13n framework |
+| `sap.m.P13nFilterPanel` | `sap.m.p13n.FilterPanel` | Use p13n framework |
+| `sap.m.DateTimeInput` | `sap.m.DatePicker` + `sap.m.TimePicker` | Split into separate controls |
+| `sap.m.MultiEditField` | — | No direct replacement, custom implementation required |
+| `sap.m.RouteMatchedHandler` | `sap.m.routing.RouteMatchedHandler` | Use the routing module |
+
+**sap.f Deprecated Controls:**
+
+| Deprecated Class | Replacement | Notes |
+|---|---|---|
+| `sap.f.Avatar` | `sap.m.Avatar` | Moved to sap.m |
+| `sap.f.IllustratedMessage` | `sap.m.IllustratedMessage` | Moved to sap.m |
+| `sap.f.Illustration` | `sap.m.Illustration` | Moved to sap.m |
+
+**sap.ui.table Deprecated Controls:**
+
+| Deprecated Class | Replacement | Notes |
+|---|---|---|
+| `sap.ui.table.ColumnMenu` | `sap.m.table.columnmenu.Menu` | New column menu framework |
+| `sap.ui.table.AnalyticalColumnMenu` | `sap.m.table.columnmenu.Menu` | New column menu framework |
+| `sap.ui.table.TablePersoController` | `sap.m.p13n.*` | Use p13n personalization framework |
+
+**sap.ui.unified Deprecated Controls:**
+
+| Deprecated Class | Replacement | Notes |
+|---|---|---|
+| `sap.ui.unified.Shell` | — | No replacement — redesign using `sap.f.ShellBar` or `sap.tnt.ToolPage` |
+| `sap.ui.unified.ShellOverlay` | — | No replacement |
+| `sap.ui.unified.ShellLayout` | — | No replacement |
+| `sap.ui.unified.SplitContainer` | `sap.m.SplitContainer` or `sap.f.FlexibleColumnLayout` | Use responsive layout |
+| `sap.ui.unified.ContentSwitcher` | — | No replacement — use `NavContainer` or custom logic |
+
+**sap.ui.layout Deprecated Controls:**
+
+| Deprecated Class | Replacement | Notes |
+|---|---|---|
+| `sap.ui.layout.form.GridLayout` | `sap.ui.layout.form.ColumnLayout` or `sap.ui.layout.form.ResponsiveGridLayout` | GridLayout was removed |
+
+**sap.ui.comp Deprecated Controls:**
+
+| Deprecated Class | Replacement | Notes |
+|---|---|---|
+| `sap.ui.comp.variants.VariantManagement` | `sap.m.VariantManagement` | See section 9 for property mapping |
+
+**sap.ui.mdc Deprecated/Changed APIs:**
+
+| Deprecated | Replacement | Notes |
+|---|---|---|
+| `sap.ui.mdc.enum.*` enums | `sap.ui.mdc.enums.*` | Namespace renamed (enum → enums) |
+| `sap.ui.mdc.FilterBar` old API | `sap.ui.mdc.FilterBar` refactored | Check API for changed properties |
+| `sap.ui.mdc.Link` FLP integration | Decoupled from FLP | Check new API for direct usage |
 
 ### 2. Deprecated Property in Constructor
 
@@ -269,76 +331,21 @@ metadata: {
 
 ### 8. sap.m.MessagePage → sap.m.IllustratedMessage
 
-**Problem**: `sap.m.MessagePage` is deprecated in favor of `sap.m.IllustratedMessage`.
+`sap.m.MessagePage` is deprecated in favor of `sap.m.IllustratedMessage`. Key changes: `text`+`description` → single `description`, `icon` → `illustrationType` enum, `showNavButton`/`navButtonPress` → `Button` in `additionalContent` aggregation.
 
-**Property and Aggregation Mapping:**
+For the full property mapping table, XML/JS examples, and illustration type list, read `references/control-migration-details.md`.
 
-| Old `MessagePage` | New `IllustratedMessage` | Rule |
-|---|---|---|
-| `title` | `title` | Direct transfer |
-| `text` and `description` | `description` | Combine with `\n` separator, or use single value if only one present |
-| `icon` | `illustrationType` | Semantic mapping: use `sap.m.IllustratedMessageType` enum (e.g., `"sapIllus-PageNotFound"`, `"sapIllus-NoData"`, `"sapIllus-UnableToLoad"`) |
-| `titleLevel` | (none) | Remove — no equivalent |
-| `showNavButton` / `navButtonPress` | `additionalContent` | Create `sap.m.Button` in `additionalContent` aggregation with the handler |
-| `buttons`, `customText`, `customDescription` | `additionalContent` | Move all child controls into `additionalContent` |
+### 9. sap.ui.comp.variants.VariantManagement → sap.m.VariantManagement
 
-**XML View Example:**
+Key changes: `variantItems` → `items`, `VariantItem.text` → `.title`, `showExecuteOnSelection` → `supportApplyAutomatically`, `showShare` → `supportPublic`. The standard variant must be explicitly created with `rename="false"` and `remove="false"`.
 
-```xml
-<!-- Before -->
-<MessagePage
-    title="{i18n>notFoundTitle}"
-    text="{i18n>notFoundText}"
-    description="{i18n>notFoundDescription}"
-    icon="sap-icon://error"
-    showNavButton="true"
-    navButtonPress=".onNavBack" />
+For the full property mapping table and standard variant XML example, read `references/control-migration-details.md`.
 
-<!-- After -->
-<IllustratedMessage
-    title="{i18n>notFoundTitle}"
-    description="{i18n>notFoundText} {i18n>notFoundDescription}"
-    illustrationType="sapIllus-PageNotFound">
-    <additionalContent>
-        <Button text="{i18n>backButtonText}" press=".onNavBack" />
-    </additionalContent>
-</IllustratedMessage>
-```
+### 10. Deprecated Core Classes
 
-**JavaScript Example:**
+Key replacements: `MessageManager` → `sap/ui/core/Messaging`, `Export*` → `sap/ui/export/Spreadsheet`, `LocalBusyIndicator` → `Control.setBusy(true)`. `SearchProvider`, `OpenSearchProvider`, and `ScrollBar` have no replacement.
 
-```javascript
-// Before
-sap.ui.define(["sap/m/MessagePage"], function(MessagePage) {
-    var oPage = new MessagePage({
-        title: "Error",
-        text: "Page not found",
-        icon: "sap-icon://error",
-        showNavButton: true,
-        navButtonPress: this.onNavBack.bind(this)
-    });
-});
-
-// After
-sap.ui.define([
-    "sap/m/IllustratedMessage",
-    "sap/m/Button",
-    "sap/m/library"
-], function(IllustratedMessage, Button, mobileLibrary) {
-    var IllustratedMessageType = mobileLibrary.IllustratedMessageType;
-    var oMessage = new IllustratedMessage({
-        title: "Error",
-        description: "Page not found",
-        illustrationType: IllustratedMessageType.PageNotFound
-    });
-    oMessage.addAdditionalContent(new Button({
-        text: "Back",
-        press: this.onNavBack.bind(this)
-    }));
-});
-```
-
-**Common illustration types**: `NoData`, `NoEntries`, `PageNotFound`, `UnableToLoad`, `NoSearchResults`. Check `sap.m.IllustratedMessageType` API reference for full list.
+For the full table and MessageManager→Messaging code example, read `references/control-migration-details.md`.
 
 ## Implementation Steps
 
@@ -434,6 +441,8 @@ sap.ui.define([
 - When replacing deprecated libraries (sap.ui.commons, sap.ui.ux3), the replacement controls may have different APIs
 - Property replacements may have inverted logic (e.g., `blocked: true` → `enabled: false`)
 - Consider using `npx @ui5/linter --details` to get direct links to migration documentation
+- `sap.f.IllustratedMessage` and `sap.f.Illustration` are deprecated in favor of `sap.m.IllustratedMessage` and `sap.m.Illustration` — this is a simple namespace move with the same API
+- When migrating `sap.ui.comp.variants.VariantManagement`, the standard variant must be explicitly created (see section 9)
 
 ## Related Skills
 

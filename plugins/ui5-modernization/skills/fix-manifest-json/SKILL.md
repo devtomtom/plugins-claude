@@ -107,6 +107,11 @@ Remove these deprecated libraries from `sap.ui5/dependencies/libs`:
 - `sap.ca.ui` - Use standard controls
 - `sap.landvisz` - Deprecated
 - `sap.ui.vtm` - Deprecated
+- `sap.sac.grid` - Deprecated since 1.112, removed 1.114
+- `sap.ui.suite` - Deprecated since 1.108
+- `sap.zen.commons` - Deprecated since 1.89
+- `sap.zen.crosstab` - Deprecated since 1.89
+- `sap.zen.dsh` - Deprecated since 1.89
 
 ```json
 // Before
@@ -129,10 +134,10 @@ Remove deprecated components from `sap.ui5/dependencies/components`.
 
 ### 5. `no-deprecated-api` - Fix View Types
 
-Change deprecated view types to "XML":
+Change deprecated view types to "XML" (or "Typed" for JS-heavy view cases):
 - `JSON` → `XML`
 - `HTML` → `XML`
-- `JS` → `XML`
+- `JS` → `XML` (or consider `Typed` view as an alternative for complex JS logic)
 - `Template` → `XML`
 
 Applies to:
@@ -421,6 +426,10 @@ Transform:
 - When removing deprecated libraries, check if there are any imports from those libraries in the codebase that need migration
 - The `minUI5Version` update means the app won't run on older UI5 versions - this is intentional for modernized UI5 code
 - After updating `_version` to 2.0.0, synchronizationMode and other v1-specific properties should also be removed if present
+- **Manifest v2 strictness**: Manifest v2.0.0 enables stricter error handling — syntactical errors in views/fragments now throw errors instead of failing silently
+- **`sap.ui/supportedThemes`** causes an error in manifest v2 — remove it if present
+- **`IAsyncContentCreation` is NOT enforced by manifest v2** — it must be explicitly implemented in Component.js (use `fix-component-async` skill)
+- **Typed View alternative**: When changing deprecated view types (`JS`, `JSON`, `HTML`) the default replacement is `XML`, but for complex JS-heavy views, consider `Typed` views as an alternative
 
 ## Related Skills
 

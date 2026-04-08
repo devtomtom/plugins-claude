@@ -127,6 +127,8 @@ The `no-deprecated-api` rule covers many cases. Determine which skill to use bas
 | `.js` | "IconPool" | `fix-control-renderer` |
 | `.js` | "rerender" | `fix-control-renderer` |
 | `.js` | "deprecated class", "deprecated property", "deprecated interface" | `fix-deprecated-controls` |
+| `.js` | "registerControllerExtensions" | `fix-fiori-elements-extensions` |
+| `.js` | "sap.ui.controller" (in Fiori Elements extension context) | `fix-fiori-elements-extensions` |
 | `.js` | "sap.ui.controller" | `fix-js-globals` (case 9: controller factory) |
 | `.js` | "jQuery.sap.declare", "jQuery.sap.require" | `fix-js-globals` (case 10: legacy module wrapping) |
 | `.js` | "getLibraryResourceBundle" | `fix-js-globals` (Core API replacement) |
@@ -303,6 +305,7 @@ For detailed fix procedures and before/after examples, read the corresponding sk
 - `fix-test-starter/SKILL.md` - QUnit test migration
 - `fix-csp-compliance/SKILL.md` - CSP compliance
 - `fix-table-row-mode/SKILL.md` - Table row properties to rowMode aggregation
+- `fix-fiori-elements-extensions/SKILL.md` - Fiori Elements V2 controller extension migration
 
 ## Error Handling
 
